@@ -1,0 +1,157 @@
+<html>
+    <head>
+        <title>Lemon's Blog</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="stylesheet" href="<?=APP_PATH?>/asset/css/bootstrap.min.css">
+        <script src="<?=APP_PATH?>/asset/js/jquery.js"></script>
+        <script src="<?=APP_PATH?>/asset/js/bootstrap.min.js"></script>
+        <style>body {
+          padding-top: 70px;
+          background: #f9f9f9
+        }
+        #tag span{
+			display:inline-block;
+        	margin:5px 10px 5px 0;
+        }
+        </style>
+    </head>
+    <body>
+    
+        <!-- nav -->
+        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+          　<div class="navbar-header">
+  　             <a href="<?=APP_PATH?>" class="navbar-brand">Lemon's Blog</a>
+  　         </div>
+            <ul class="nav navbar-nav">
+            <li class="active"><a href="<?=APP_PATH?>">网站首页</a></li>
+            <li><a href="<?=APP_PATH?>/index.php/welcome/index/id/15">web安全</a></li>
+            <li><a href="<?=APP_PATH?>/index.php/welcome/index/id/16">编程开发</a></li>
+            <li><a href="<?=APP_PATH?>/index.php/welcome/index/id/22">代码审计</a></li>
+            <li><a href="<?=APP_PATH?>/index.php/welcome/index/id/13">渗透测试</a></li>
+            <li><a href="<?=APP_PATH?>/index.php/welcome/index/id/23">实用工具</a></li>
+            </ul>
+            <form action="<?php echo APP_PATH.'/index.php/welcome/search';?>" class="navbar-form navbar-right" rol="search" style="margin-right: 1px" method="post">
+                <div class="form-group">
+                <input type="text" class="form-control" placeholder="请输入关键词" name="search"/>
+                </div>
+                <button type="submit" class="btn btn-default">搜索</button>
+            </form>
+        </div>
+
+        <!-- main -->
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9">
+					
+                    <!-- article -->
+                    <?php if($status==0){ ?>
+						<div class="alert alert-danger" role="alert">对不起，未查到相关内容</div>
+					<?php }else{ ?>
+	                    <div class="alert alert-info" role="alert">包含关键字 <?php echo $key;?> 的文章</div>
+	                    <?php foreach($search as $v){ ?>
+	                    <div class="panel panel-primary">
+	                        <div class="panel-heading"><?=$v->title?></div>
+	                        <div class="panel-body"><?php echo mb_strimwidth(strip_tags(htmlspecialchars_decode($v->content)),0,404,'...');?> <a href="<?php echo APP_PATH.'/index.php/welcome/articles/id/'.$v->article_id;?>">阅读全文</a></div>
+	                        <div class="panel-footer" style="text-align: right;">posted by <?php echo $v->name;?> @ <?php echo date('Y-m-d H:i',$v->date);?></div>
+	                    </div>
+	                    <?php } ?>
+                    <?php } ?>
+
+
+                </div>
+				<div class="col-md-3">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">公告</div>
+                        <div class="panel-body" id="notice"></div>
+                        <div class="panel-body" style="text-align: right;" id="notice_time"></div>
+                    </div>
+
+                    <div class="list-group">
+                        <a href="#" class="list-group-item disabled">分类</a>
+                        <div id="category"></div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">最新评论</div>
+                        <div id="message"></div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">标签</div>
+                        <div class="panel-body" id="tag"></div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">友情链接</div>
+                        <div class="panel-body" >
+                        	<div class="list-group" id="link"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- page -->
+            <div class="row">
+                <div class="col-md-9">
+                    <ul class="pager">
+                        <li><a href="#">&laquo;上一页</a></li>
+                        <li><a href="#">下一页&raquo;</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- foot -->
+        <div id="footer" class="container">
+        <nav class="navbar navbar-default">
+            <div class="navbar-inner navbar-content-center">
+                <p class="text-muted credit" style="text-align:center;margin-top: 20px">
+                    © 2016 Lemon's Blog. 由 xxx 强力驱动.
+                </p>
+            </div>
+        </nav>
+        <script src="<?=APP_PATH?>/asset/js/jquery.js"></script>
+        <script src="<?=APP_PATH?>/asset/js/bootstrap.min.js"></script>
+		<script>
+				function formatDate(now){     
+		            var   year=now.getYear();     
+		            var   month=now.getMonth()+1;     
+		            var   date=now.getDate();     
+		            var   hour=now.getHours();     
+		            var   minute=now.getMinutes();     
+		            var   second=now.getSeconds();     
+		            return   month+"-"+date+" "+hour+":"+minute;     
+				}
+				$.get('<?php echo APP_PATH."/index.php/welcome/navApi";?>', 
+					function(data){
+						$.each(data['tag'],function(index,y){
+							$html = '<span class="label label-default">'+y.tag+'</span>';
+							$("#tag").append($html);
+						});
+						
+						$.each(data['category'],function(index,y){
+							$html = '<a href="##" class="list-group-item"><span class="badge">'+y.num+'</span>'+y.category+'</a>';
+							$("#category").append($html);
+						});
+						
+						$("#notice").html(data['notice'].content);
+						var notice_time = new Date(data['notice'].date * 1000);
+						$("#notice_time").html(notice_time.toLocaleString());
+						
+						$.each(data['link'],function(index,y){
+							$html = '<a href="'+y.url+'" class="list-group-item" target="_blank">'+y.name+'</a>';
+							$("#link").append($html);
+						});
+						
+						$.each(data['message'],function(index,y){
+							var message_time = new Date(y.date * 1000);
+							$html = '<div class="panel-body">内容:'+y.comment+'</div><div class="panel-body" style="text-align: right;">'+y.username+'于'+formatDate(message_time)+'留言</div>';
+							$("#message").append($html);
+						});
+					},"json");
+		
+		</script>
+    </body>
+</html>

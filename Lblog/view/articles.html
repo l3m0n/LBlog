@@ -1,0 +1,211 @@
+<html>
+    <head>
+        <title>Lemon's Blog</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="stylesheet" href="<?=APP_PATH?>/asset/css/bootstrap.min.css">
+        <script src="<?=APP_PATH?>/asset/js/jquery.js"></script>
+        <script src="<?=APP_PATH?>/asset/js/bootstrap.min.js"></script>
+        <style>body {
+          padding-top: 70px;
+          background: #f9f9f9
+        }
+        #tag span{
+			display:inline-block;
+        	margin:5px 10px 5px 0;
+        }
+        </style>
+    </head>
+    <body>
+        <!-- nav -->
+        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+          　<div class="navbar-header">
+  　             <a href="<?=APP_PATH?>" class="navbar-brand">Lemon's Blog</a>
+  　         </div>
+            <ul class="nav navbar-nav">
+            <li class="active"><a href="<?=APP_PATH?>">网站首页</a></li>
+            <li><a href="<?=APP_PATH?>/index.php/welcome/index/id/15">web安全</a></li>
+            <li><a href="<?=APP_PATH?>/index.php/welcome/index/id/16">编程开发</a></li>
+            <li><a href="<?=APP_PATH?>/index.php/welcome/index/id/22">代码审计</a></li>
+            <li><a href="<?=APP_PATH?>/index.php/welcome/index/id/13">渗透测试</a></li>
+            <li><a href="<?=APP_PATH?>/index.php/welcome/index/id/23">实用工具</a></li>
+            </ul>
+            <form action="<?php echo APP_PATH.'/index.php/welcome/search';?>" class="navbar-form navbar-right" rol="search" style="margin-right: 1px" method="post">
+                <div class="form-group">
+                <input type="text" class="form-control" placeholder="请输入关键词" name="search"/>
+                </div>
+                <button type="submit" class="btn btn-default">搜索</button>
+            </form>
+        </div>
+
+        <!-- main -->
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9">
+
+                    <!-- article -->
+                    <div class="panel panel-primary">
+                        <div class="panel-heading"><?=$articles->title?></div>
+                        <div class="panel-body"><?php echo htmlspecialchars_decode($articles->content);?></div>
+                    </div>
+
+                    <!-- info -->
+                    <div class="panel panel-primary">
+                        <div class="panel-body">
+                            标签：<span class="label label-default"><?=$articles->tag?></span>
+                          
+                        </div>
+                        <div class="panel-footer">posted @ <?php echo date('Y-m-d H:i',$articles->date);?></div>
+                    </div>
+
+                    <!-- message -->
+                    <div class="panel panel-primary">
+                        <div class="panel-body">
+                            <ul class="media-list">
+                            	<?php if(isset($status) && $status==0){ echo "快来抢个沙发吧！";}else{ ;?>
+								<?php foreach($message as $v){ ?>
+                                <li class="media">
+                                    <a class="pull-left" href="#">
+                                        <img class="media-object" src="<?=APP_PATH?>/asset/img/face.jpg" alt="xxx">
+                                    </a>
+                                    <div class="media-body">
+                                        <h4 class="media-heading"><?=$v->username?></h4>
+                                        <h6><?php echo date('Y-m-d H:i',$v->date);?></h6>
+                                        <div><?=$v->comment?></div>
+                                    </div>
+                                </li>
+								<?php } ?>
+							<?php } ?>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- guestbook -->
+                    <div class="panel panel-primary">
+                        <div class="panel-body">
+                            <h4>添加新评论</h4>
+
+                            <form class="form-horizontal" role="form" action="<?php echo APP_PATH.'/index.php/welcome/comment';?>" method="post">
+								<input type="text" value="<?=$articles->article_id?>" name="article_id" hidden>
+                                <div class="form-group">
+                                    <label for="input1" class="col-sm-1 control-label" >昵称</label>
+                                    <div class="col-sm-5">
+                                        <input type="text" class="form-control" id="input1" placeholder="请输入您的昵称" name="name">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="input2" class="col-sm-1 control-label" >邮箱</label>
+                                    <div class="col-sm-5">
+                                        <input type="email" class="form-control" id="input2" placeholder="请输入您的邮箱" name="mail">
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label for="input3" class="col-sm-1 control-label">评论</label>
+                                    <div class="col-sm-5">
+                                        <textarea class="form-control" rows="8" cols="50" name="comment" id="textarea" placeholder="说点什么吧"></textarea>
+                                        
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-sm-offset-1 col-sm-10">
+                                        <button type="submit" class="btn btn-default">提交评论</button>
+                                    </div>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+             <div class="col-md-3">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">公告</div>
+                        <div class="panel-body" id="notice"></div>
+                        <div class="panel-body" style="text-align: right;" id="notice_time"></div>
+                    </div>
+
+                    <div class="list-group">
+                        <a href="#" class="list-group-item disabled">分类</a>
+                        <div id="category"></div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">最新评论</div>
+                        <div id="message"></div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">标签</div>
+                        <div class="panel-body" id="tag"></div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">友情链接</div>
+                        <div class="panel-body" >
+                        	<div class="list-group" id="link"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- foot -->
+        <div id="footer" class="container">
+        <nav class="navbar navbar-default">
+            <div class="navbar-inner navbar-content-center">
+                <p class="text-muted credit" style="text-align:center;margin-top: 20px">
+                    © 2016 Lemon's Blog. 由 xxx 强力驱动.
+                </p>
+            </div>
+        </nav>
+        <script src="<?=APP_PATH?>/asset/js/jquery.js"></script>
+        <script src="<?=APP_PATH?>/asset/js/bootstrap.min.js"></script>
+		<script>
+				function formatDate(now){     
+		            var   year=now.getYear();     
+		            var   month=now.getMonth()+1;     
+		            var   date=now.getDate();     
+		            var   hour=now.getHours();     
+		            var   minute=now.getMinutes();     
+		            var   second=now.getSeconds();     
+		            return   month+"-"+date+" "+hour+":"+minute;     
+				}
+				$.get('<?php echo APP_PATH."/index.php/welcome/navApi";?>', 
+					function(data){
+						$.each(data['tag'],function(index,y){
+							$html = '<span class="label label-default">'+y.tag+'</span>';
+							$("#tag").append($html);
+						});
+						
+						$.each(data['category'],function(index,y){
+							$html = '<a href="##" class="list-group-item"><span class="badge">'+y.num+'</span>'+y.category+'</a>';
+							$("#category").append($html);
+						});
+						
+						$("#notice").html(data['notice'].content);
+						var notice_time = new Date(data['notice'].date * 1000);
+						$("#notice_time").html(notice_time.toLocaleString());
+						
+						$.each(data['link'],function(index,y){
+							$html = '<a href="'+y.url+'" class="list-group-item" target="_blank">'+y.name+'</a>';
+							$("#link").append($html);
+						});
+						
+						$.each(data['message'],function(index,y){
+							var message_time = new Date(y.date * 1000);
+							$html = '<div class="panel-body">内容:'+y.comment+'</div><div class="panel-body" style="text-align: right;">'+y.username+'于'+formatDate(message_time)+'留言</div>';
+							$("#message").append($html);
+						});
+					},"json");
+		
+		</script>
+    </body>
+</html>
